@@ -163,7 +163,9 @@ def train(args: Namespace) -> None:
         test_dataloader = DataLoader(test_set, batch_size=128, shuffle=True)
 
         criterion = nn.MSELoss().cuda()
-        model = BaselineRNN(p, 1).cuda()
+
+        # Here to change the model structure
+        model = BaselineRNN(input_size=p, hidden_size=p*2, output_size=1, n_layers=4).cuda()
         optimizer = torch.optim.Adam(model.parameters(), 0.001)
 
         def train_model(model, dataloader, criterion, optimizer, n_epochs=25):

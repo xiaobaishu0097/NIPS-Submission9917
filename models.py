@@ -96,13 +96,15 @@ class gstarhat1(nn.Module):
 
 
 class BaselineRNN(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, n_layers: int = 1) -> None:
+    def __init__(self, input_size: int, hidden_size: int, output_size: int, n_layers: int = 1) -> None:
         super().__init__()
         self.rnn = nn.RNN(input_size, hidden_size, n_layers, batch_first=True)
+        self.output_mapping = nn.Linear(hidden_size, output_size)
 
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         # x: (batch_size, seq_len, input_size)
         # output: (batch_size, seq_len, output_size)
         # h_n: (num_layers, batch_size, output_size)
         output, h_n = self.rnn(x[..., 3:])
+        output = self.output_mapping(output)
         return output, h_n

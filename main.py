@@ -75,7 +75,7 @@ def train_gstarhat_model(model, train_dataloader, criterion, optimizer,
     return model
 
 
-def train(args: Namespace) -> None:
+def train(args: Namespace) -> float:
     logger = Logger.get_logger(args.logger_name)
 
     adjacency_matrix, ni = estimate_adjacency_matrix(args.n_nodes)
@@ -91,7 +91,12 @@ def train(args: Namespace) -> None:
         np.array([0, 1, 2, 3, 4] * 5).reshape((5, 5)).T)
     Z = np.random.multivariate_normal(np.ones(5), sigma, args.n_nodes)
     gamma = np.array([-0.5, 0.3, 0.8, -0.1, -0.1])
-    B0 = beta[0] + Z.dot(gamma)
+    # B0 = beta[0] + Z.dot(gamma)
+    def g0(z):
+        return(0.2-0.5*z[:,0]+0.3*z[:,1]+0.8*z[:,2]-0.1*z[:,3]-0.1*z[:,4])                       # case 1
+        #return(5-2*z[:,0]+0.5*z[:,1]**2-z[:,2]**3-np.log(z[:,3]+3)+np.sqrt(z[:,4]+3))     # case 2
+        # return(z[:,0]**2-2*z[:,1]**2+z[:,1]*z[:,2]+z[:,3]*z[:,4])                       # case 3
+    B0=g0(Z)
 
     mu0 = np.linalg.inv((1 - beta[1]) * np.identity(args.n_nodes) -
                         beta[2] * weights).dot(B0)
@@ -105,6 +110,9 @@ def train(args: Namespace) -> None:
     W_tensor = torch.from_numpy(weights).clone().detach()
 
     coverage_probability_count = np.zeros((2, 3))
+
+    simu_loss = []
+
     for simu in range(0, 50):
         random.seed(simu)
         Y = np.zeros((args.n_nodes, args.n_timepoints * 2))
@@ -198,6 +206,10 @@ def train(args: Namespace) -> None:
         train_model(model, train_dataloader, criterion, optimizer, 100)
         loss = test_model(model, test_dataloader, criterion)
         logger.info(f'Simu: {simu}; MSE: {MSE / args.n_nodes / args.n_timepoints}, RNN loss: {loss.item()}')
+        simu_loss.append(loss.item())
+    logger.info(f'Average loss: {np.mean(simu_loss)}')
+
+    return np.mean(simu_loss)
 
 
         # thetahat_tensor = torch.from_numpy(thetahat)
@@ -282,6 +294,8 @@ if __name__ == '__main__':
     parser = get_training_parser(parser)
     args = parser.parse_args()
 
+    args.n_nodes = 200
+
     # convert time to string
     time_string = time.strftime('%Y%m%d_%H%M%S', time.localtime())
     args.work_dir = os.path.join(args.work_dir, time_string)
@@ -293,4 +307,8 @@ if __name__ == '__main__':
                                file_name=os.path.join(args.work_dir,
                                                       'log.txt'))
 
-    train(args)
+    mse_list = []
+    for _ in range(200):
+        mse = train(args)
+        mse_list.append(mse)
+    logger.info(f'Average MSE: {np.mean(mse_list)}, std: {np.std(mse_list)}')

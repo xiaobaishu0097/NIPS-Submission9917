@@ -294,7 +294,7 @@ if __name__ == '__main__':
     parser = get_training_parser(parser)
     args = parser.parse_args()
 
-    args.n_nodes = 200
+    # args.n_nodes = 200
 
     # convert time to string
     time_string = time.strftime('%Y%m%d_%H%M%S', time.localtime())

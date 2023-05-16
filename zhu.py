@@ -4,8 +4,8 @@ import random
 import argparse
 
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--n_nodes', type=int, default=200,)
-parser.add_argument('--n_timepoints', type=int, default=200,)
+parser.add_argument('--n_nodes', type=int, default=100,)
+parser.add_argument('--n_timepoints', type=int, default=100,)
 args = parser.parse_args()
 
 random.seed(12)
@@ -43,7 +43,7 @@ Y0=np.random.multivariate_normal(mu0,cov0,1)
 
 
 from torch.utils.data import DataLoader
-simul = 50
+simul = 200
 cpcout = np.zeros((2,3))
 thetazhu = np.zeros((3,simul))
 msezhu = np.zeros(simul)
@@ -96,13 +96,13 @@ for simu in range(0,simul):
 
 print(cpcout/simul)
 print(np.mean(msezhu))
-print(np.std(msezhu), ddof=1)
+print(np.std(msezhu, ddof=1))
 
 print(np.mean(thetazhu[0,:]))
-print(np.std(thetazhu[0,:]), ddof=1)
+print(np.std(thetazhu[0,:], ddof=1))
 
 print(np.mean(thetazhu[1,:]))
-print(np.std(thetazhu[1,:]), ddof=1)
+print(np.std(thetazhu[1,:], ddof=1))
 
 print(np.mean(thetazhu[2,:]))
-print(np.std(thetazhu[2,:]), ddof=1)
+print(np.std(thetazhu[2,:], ddof=1))

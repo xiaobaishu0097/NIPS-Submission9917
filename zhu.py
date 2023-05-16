@@ -96,7 +96,7 @@ for simu in range(0,simul):
 
 print(cpcout/simul)
 print(np.mean(msezhu))
-print(np.std(mse.zhu), ddof=1)
+print(np.std(msezhu), ddof=1)
 
 print(np.mean(thetazhu[0,:]))
 print(np.std(thetazhu[0,:]), ddof=1)

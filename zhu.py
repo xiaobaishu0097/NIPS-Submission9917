@@ -1,10 +1,16 @@
 import numpy as np
 import math
 import random
+import argparse
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--n_nodes', type=int, default=200,)
+parser.add_argument('--n_timepoints', type=int, default=200,)
+args = parser.parse_args()
 
 random.seed(12)
-T=200
-N=200
+T=args.n_timepoints
+N=args.n_nodes
 
 A=np.zeros((N,N))
 for i in range(0,N-1,1):

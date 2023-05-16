@@ -308,7 +308,9 @@ if __name__ == '__main__':
                                                       'log.txt'))
 
     mse_list = []
-    for _ in range(200):
+    for i_simu in range(200):
         mse = train(args)
-        mse_list.append(mse)
+        if not np.isnan(mse):
+            mse_list.append(mse)
+            logger.info(f'Simu: {i_simu}; MSE: {mse}')
     logger.info(f'Average MSE: {np.mean(mse_list)}, std: {np.std(mse_list)}')
